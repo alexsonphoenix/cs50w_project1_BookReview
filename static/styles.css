@@ -1,0 +1,15 @@
+
+
+
+
+
+/*REGISTER.html Colour indicating successfully registered */
+input[name="email"]:required {
+  border-color: palegreen;
+}
+input[name="email"]:invalid {
+  border-color: salmon;
+}
+#myPopup {
+   visibility:hidden;
+}
