@@ -8,8 +8,11 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
-app = Flask(__name__)
 
+# Import table definitions.
+#from models import *
+
+app = Flask(__name__)
 # Check for environment variable
 if not os.getenv("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL is not set")
@@ -143,11 +146,10 @@ def changePassword():
         cursor = db.execute("SELECT * FROM users WHERE id = :user_id",
                           {"user_id":session["user_id"]})
         rows = cursor.fetchone()
-        existingPassword = rows.hash
 
         # Ensure username exists and password is correct
-        if cursor.rowcount!=1 or not check_password_hash(rows.hash, request.form.get("password")):
-            return apology("invalid username and/or password", 403)  # if does not match, render an apology
+        if not check_password_hash(rows.hash, request.form.get("password")):
+            return apology("invalid password", 403)  # if does not match, render an apology
         else:
             newPassword = request.form.get("newPassword")
             confPassword = request.form.get("confPassword")

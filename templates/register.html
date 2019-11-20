@@ -5,9 +5,10 @@
 {% endblock %}
 
 {% block main %}
+
       <form action="{{url_for('register')}}" method="POST">
-        <div class="row d-flex justify-content-center">
-            <div class="form-group">
+        <div class="row justify-content-center">
+            <div style="form-group">
                 <input autocomplete="off" autofocus class="form-control" id = "emailField" name="email" placeholder="youremail@example.com" type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required>
             </div>
         </div>
@@ -15,17 +16,16 @@
         <div class="row justify-content-center">
             <div class="form-group">
                 <input autocomplete="off" autofocus class="form-control" id = "username" name="username" placeholder="Username" type="text" required data-container="body" data-toggle="popover" data-placement="left" data-content="Too short or alredy exists">
-
             </div>
         </div>
 
-        <div class="row d-flex justify-content-center">
+        <div class="row justify-content-center">
             <div class="form-group">
                 <input class="form-control" id = "password" name="password" placeholder="Password" type="password" required>
             </div>
         </div>
 
-        <div class="row d-flex justify-content-center">
+        <div class="row justify-content-center">
             <div class="form-group">
                 <input class="form-control" id = "confirmation" name="confirmation" placeholder="Confirmation" type="password" required>
             </div>
@@ -47,14 +47,14 @@ $(document).ready(function(){
             .done(function(response) {
                 if(response == true){
                     // username's length is at least 2 and does not already belong to a user in the database (Check by/Check in application.py)=> GREEN border
-                     $('input[name="username"]').css("border-left-color", "palegreen");
+                     $('input[name="username"]').css("border-color", "palegreen");
                      $('#username').popover('hide');
                      console.log("Username available");
                      submitability_username = true;
                 } //https://getbootstrap.com/docs/4.3/components/toasts/#toastdispose
                 else{
                     // username's length is 1 and already belong to a user in the database => RED border
-                    $('input[name="username"]').css("border-left-color", "salmon");
+                    $('input[name="username"]').css("border-color", "salmon");
                     $('#username').popover('show');
                     console.log("Username unavailable");
                     submitability_username = false;
