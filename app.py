@@ -2,6 +2,7 @@ import os
 
 from helpers import apology, login_required
 from flask import Flask, session, redirect, render_template, request, jsonify
+import json
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -31,13 +32,19 @@ db = scoped_session(sessionmaker(bind=engine))
 @app.route("/")
 @login_required
 def index():
-    return render_template("index.html")
+    return render_template("search.html")
 
 
 @app.route("/search", methods=["GET", "POST"])
 def search():
-    return render_template("search.html")
+    user_input=request.args.get("q")
+    #input_type=request.args.get("t")  # javascript returns search type(isbn, title,author,or year)
+    print("search Input is: ",user_input)
+    #print("type Input is: ",input_type)
+    results = db.execute("SELECT * FROM books WHERE title LIKE '%'||:user_input||'%'",{"user_input":str(user_input)}).fetchall()
 
+    res = [(result.isbn, result.title, result.author, result.year) for result in results]
+    return jsonify(res)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():

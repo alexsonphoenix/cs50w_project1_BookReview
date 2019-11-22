@@ -2,3 +2,11 @@
 #myPopup {
    visibility:hidden;
 }
+
+#searching{
+  visibility:hidden;
+}
+
+#searched{
+  visibility:hidden;
+}
