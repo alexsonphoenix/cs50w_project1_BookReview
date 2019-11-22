@@ -6,33 +6,31 @@
 
 {% block main %}
 
-      <form action="{{url_for('register')}}" method="POST">
-        <div class="row justify-content-center">
-            <div style="form-group">
-                <input autocomplete="off" autofocus class="form-control" id = "emailField" name="email" placeholder="youremail@example.com" type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required>
-            </div>
-        </div>
+<form action="{{url_for('register')}}" method="POST">
+  <div style="form-group">
+      <label for="emailField">Email address</label>
+      <input autocomplete="off" autofocus class="form-control" id = "emailField" name="email" placeholder="youremail@example.com" type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required>
+  </div>
 
-        <div class="row justify-content-center">
-            <div class="form-group">
-                <input autocomplete="off" autofocus class="form-control" id = "username" name="username" placeholder="Username" type="text" required data-container="body" data-toggle="popover" data-placement="left" data-content="Too short or alredy exists">
-            </div>
-        </div>
+  <div class="form-group">
+      <label for="username">Username</label>
+      <input autocomplete="off" autofocus class="form-control" id = "username" name="username" placeholder="Username" type="text" required data-container="body" data-toggle="popover" data-placement="left" data-content="Too short or alredy exists">
+  </div>
 
-        <div class="row justify-content-center">
-            <div class="form-group">
-                <input class="form-control" id = "password" name="password" placeholder="Password" type="password" required>
-            </div>
-        </div>
+  <div class="form-group">
+      <label for="password">Password</label>
+      <input class="form-control" id = "password" name="password" placeholder="Password" type="password" required>
+  </div>
 
-        <div class="row justify-content-center">
-            <div class="form-group">
-                <input class="form-control" id = "confirmation" name="confirmation" placeholder="Confirmation" type="password" required>
-            </div>
-        </div>
+  <div class="form-group">
+      <label for="confirmation">Confirmation</label>
+      <input class="form-control" id = "confirmation" name="confirmation" placeholder="Confirmation" type="password" required>
+  </div>
+  <div class="text-center">
+    <button class="btn btn-primary" type="submit" name="submit">Register</button>  
+  </div>
 
-        <button class="btn btn-primary" type="submit" name="submit">Register</button>
-    </form>
+</form>
 
 <script>
 var submitability_username = false;
@@ -70,9 +68,11 @@ $(document).ready(function(){
         isValidEmail = emailField.checkValidity();
 
         if ( isValidEmail ) {
+            $('input[name="email"]').css("border-color", "palegreen");
             console.log("email is valid");
             submitability_email = true;
         } else {
+            $('input[name="email"]').css("border-color", "salmon");
             console.log("email is invalid");
             submitability_email = false;
         }
@@ -84,6 +84,8 @@ $(document).ready(function(){
         password = document.getElementById("password").value;
 
         if(password.length < 1){
+            $('input[name="password"]').css("border-color", "salmon");
+            $('input[name="confirmation"]').css("border-color", "salmon");
             console.log("Too short");
             submitability_passwordMatched = false;
         }
@@ -100,10 +102,14 @@ $(document).ready(function(){
         // check equality of the password and confirmation
         if(password == confirmation){
             // if password and confirmation are matched => approve to proceed
+            $('input[name="password"]').css("border-color", "palegreen");
+            $('input[name="confirmation"]').css("border-color", "palegreen");
             console.log("Password matched");
             submitability_passwordMatched = true;
         } else{
             // if password and confirmation do not match => disapprove to proceed
+            $('input[name="password"]').css("border-color", "salmon");
+            $('input[name="confirmation"]').css("border-color", "salmon");
             console.log("Password did not match");
             submitability_passwordMatched = false;
         }
