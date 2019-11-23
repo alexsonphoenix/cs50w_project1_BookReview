@@ -1,10 +1,86 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Book Reviews
+    Search for books
 {% endblock %}
 
 {% block main %}
-  <h1>You're Logged In</h1>
+<div class="text-center">
+  <form action="{{url_for('search')}}" method="post">
+    <div class="form-inline">
+      <div class="form-group">
+        <select class="form-control" id="input_type" name="input_type" onchange="loadSearchType(this.value)" required>
+          <option value="" disabled selected>Choose search type</option>
+          <option value="byIsbn">Search by ISBN</option>
+          <option value="byTitle">Search by Title</option>
+          <option value="byAuthor">Search by Author Name</option>
+          <option value="byYear">Search by year</option>
+        </select>
+      </div>
 
+      <div class="form-group">
+        <label for="searchInput" class="sr-only">Type here</label>
+        <input type="text" class="form-control" id="searchInput" name="searchInput" placeholder="ISBN, Title, Year or Author" required>
+      </div>
+      <button type="submit" class="btn btn-primary mb-2">Search</button>
+
+      <div class="spinner-border text-info" role="status" id="searching" style="display:none;">
+        <span class="sr-only">Loading...</span>
+      </div>
+      <div class="spinner-grow text-success" role="status" id="searched" style="display:none;">
+        <span class="sr-only">Loading...</span>
+      </div>
+      <div class="spinner-grow text-danger" role="status" id="noResult" style="display:none;">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+  </form>
+</div>
+
+
+<!-- Display results -->
+<h2>Results:</h2>
+<ul id="display_results"></ul>
+
+<script type="text/javascript">
+var search_type;
+//Update search_type varible everytime it changes
+function loadSearchType(stype){
+  search_type = stype;
+}
+$(document).ready(function(){
+  //var t;
+  var user_input;
+  $('input[name="searchInput"]').keyup(function(){
+      //Indicators of search status
+      var searching = document.getElementById("searching");
+      var searched = document.getElementById("searched");
+      var noResult = document.getElementById("noResult");
+      searching.style.display = "inline";
+      searched.style.display = "none";
+      noResult.style.display ="none"
+
+      user_input = document.getElementById("searchInput").value;
+      console.log('search type is:'+search_type)
+      let html='';
+      $.get('/search?q='+user_input+'&t='+search_type)
+            .done(function(data) {
+                for (book of data){
+                  html += '<li>' + book + '</li>';
+                }
+                console.log(html)
+                document.getElementById('display_results').innerHTML = html;
+                searching.style.display = "none";
+                if(html ==''){
+                  noResult.style.display ="inline";
+                  searched.style.display = "none";
+                }else{
+                  searched.style.display = "inline";
+                  noResult.style.display ="none";
+                }
+              });
+
+  });
+});
+</script>
 {% endblock %}
