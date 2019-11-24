@@ -6,7 +6,7 @@
 
 {% block main %}
 <div class="text-center">
-  <form action="{{url_for('search')}}" method="post">
+  <form>
     <div class="form-inline">
       <div class="form-group">
         <select class="form-control" id="input_type" name="input_type" onchange="loadSearchType(this.value)" required>
@@ -22,7 +22,6 @@
         <label for="searchInput" class="sr-only">Type here</label>
         <input type="text" class="form-control" id="searchInput" name="searchInput" placeholder="ISBN, Title, Year or Author" required>
       </div>
-      <button type="submit" class="btn btn-primary mb-2">Search</button>
 
       <div class="spinner-border text-info" role="status" id="searching" style="display:none;">
         <span class="sr-only">Loading...</span>
@@ -66,9 +65,11 @@ $(document).ready(function(){
       $.get('/search?q='+user_input+'&t='+search_type)
             .done(function(data) {
                 for (book of data){
-                  html += '<li>' + book + '</li>';
+                  var book_isbn = book[0]  //Extract isbn to pass into a link
+                  var book_link=`/book?isbn=${book_isbn}`
+                  html += '<li>' + `<a id=${book_isbn} href=${book_link}>` + book[1] +' by '+ book[2] + '</a>' +'</li>';
+
                 }
-                console.log(html)
                 document.getElementById('display_results').innerHTML = html;
                 searching.style.display = "none";
                 if(html ==''){

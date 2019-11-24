@@ -35,6 +35,13 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/book", methods=["GET", "POST"])
+@login_required
+def book():
+    isbn = request.args.get("isbn")
+    return render_template("book.html", isbn=isbn)
+
+
 @app.route("/search", methods=["GET", "POST"])
 def search():
     user_input=request.args.get("q")
@@ -57,7 +64,7 @@ def search():
     elif(input_type=="byYear"):
         print("query by year")
         results = db.execute("SELECT * FROM books WHERE year LIKE '%'||:user_input||'%'",{"user_input":int(user_input)}).fetchall()
-    
+
     res = [(result.isbn, result.title, result.author, result.year) for result in results]
     return jsonify(res)
 
