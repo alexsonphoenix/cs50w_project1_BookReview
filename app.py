@@ -3,7 +3,10 @@ import os
 from helpers import apology, login_required
 from flask import Flask, session, redirect, render_template, request, jsonify
 import json
+import requests
 from flask_session import Session
+from markupsafe import Markup
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
@@ -39,7 +42,11 @@ def index():
 @login_required
 def book():
     isbn = request.args.get("isbn")
-    return render_template("book.html", isbn=isbn)
+    res = requests.get("https://www.goodreads.com/book/isbn/ISBN?format=json", params={"key": "hYq7LZ3pS3xoQTShFaX9A", "isbn": isbn})
+    if res.status_code != 200:
+      raise Exception("ERROR: API request unsuccessful.")
+    result = res.json()
+    return render_template("book.html", isbn=isbn, result=Markup(json.dumps(result)))
 
 
 @app.route("/search", methods=["GET", "POST"])

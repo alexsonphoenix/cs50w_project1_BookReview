@@ -5,5 +5,7 @@
 {% endblock %}
 
 {% block main %}
-    <p>This is the isbn code: {{isbn}}</p>
+  <p>This is the isbn code: {{isbn}}</p>
+
+  {{result|safe}}
 {% endblock %}
