@@ -68,7 +68,7 @@ $(document).ready(function(){
                 for (book of data){
                   var book_isbn = book[0]  //Extract isbn to pass into a link
                   var book_link=`/book?isbn=${book_isbn}`
-                  html += '<li>' + `<a href=${book_link}>` + book[1] +' by '+ book[2] + '</a>' +'</li>';
+                  html += '<li>' + `<a href=${book_link}>` + book[1] +' by '+ book[2] + ' in ' + book[3]+'</a>' +'</li>';
 
                 }
                 document.getElementById('display_results').innerHTML = html;

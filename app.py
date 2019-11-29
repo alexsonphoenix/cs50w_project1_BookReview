@@ -42,11 +42,17 @@ def index():
 @login_required
 def book():
     isbn = request.args.get("isbn")
-    res = requests.get("https://www.goodreads.com/book/isbn/ISBN?format=json", params={"key": "hYq7LZ3pS3xoQTShFaX9A", "isbn": isbn})
-    if res.status_code != 200:
+    res1 = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "hYq7LZ3pS3xoQTShFaX9A", "isbns": isbn})
+    if res1.status_code != 200:
       raise Exception("ERROR: API request unsuccessful.")
-    result = res.json()
-    return render_template("book.html", isbn=isbn, result=Markup(json.dumps(result)))
+    result1 = res1.json()
+
+    res2 = requests.get("https://www.goodreads.com/book/show.json", params={"key": "hYq7LZ3pS3xoQTShFaX9A", "id": result1["books"][0]["id"]})
+    if res2.status_code != 200:
+      raise Exception("ERROR: API request unsuccessful.")
+    result2 = res2.json()
+    print(type(result2))
+    return render_template("book.html", isbn=isbn, result1=result1, result2=result2)
 
 
 @app.route("/search", methods=["GET", "POST"])
@@ -70,7 +76,7 @@ def search():
         results = db.execute("SELECT * FROM books WHERE author LIKE '%'||:user_input||'%'",{"user_input":str(user_input)}).fetchall()
     elif(input_type=="byYear"):
         print("query by year")
-        results = db.execute("SELECT * FROM books WHERE year LIKE '%'||:user_input||'%'",{"user_input":int(user_input)}).fetchall()
+        results = db.execute("SELECT * FROM books WHERE year::TEXT LIKE '%'||:user_input||'%'",{"user_input":int(user_input)}).fetchall()
 
     res = [(result.isbn, result.title, result.author, result.year) for result in results]
     return jsonify(res)
