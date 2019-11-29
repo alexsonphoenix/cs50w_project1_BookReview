@@ -2,3 +2,7 @@
 #myPopup {
    visibility:hidden;
 }
+
+main{
+  max-inline-size: min-content;
+}

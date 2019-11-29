@@ -13,6 +13,8 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
 
+import xml.etree.ElementTree as ET
+from bs4 import BeautifulSoup
 # Import table definitions.
 #from models import *
 
@@ -51,8 +53,21 @@ def book():
     if res2.status_code != 200:
       raise Exception("ERROR: API request unsuccessful.")
     result2 = res2.json()
-    print(type(result2))
-    return render_template("book.html", isbn=isbn, result1=result1, result2=result2)
+
+    res3 = requests.get("https://www.goodreads.com/book/show.xml", params={"key": "hYq7LZ3pS3xoQTShFaX9A", "id": result1["books"][0]["id"]})
+    if res3.status_code != 200:
+      raise Exception("ERROR: API request unsuccessful.")
+    root = ET.fromstring(res3.content)
+    book_details = []
+    for book in root.findall('book'):
+        book_details.append(book.find('title').text)
+        book_details.append(book.find('publication_year').text)
+        book_details.append(book.find('publisher').text)
+        book_details.append(book.find('description').text)
+        book_details.append(BeautifulSoup(book.find('small_image_url').text))
+
+    print(book_details)
+    return render_template("book.html", isbn=isbn, result1=result1, result2=result2, book_details=book_details)
 
 
 @app.route("/search", methods=["GET", "POST"])

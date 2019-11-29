@@ -5,15 +5,19 @@
 {% endblock %}
 
 {% block main %}
-  <p>This is the isbn code: {{isbn}}</p>
+  <h1>Book Details:</h1>
+  <ul>
+    <li>Book Title: {{book_details[0]}}</li>
+    <li>publication year: {{book_details[1]}}</li>
+    <li>Publisher: {{book_details[2]}}</li>
+    <li>description: {{book_details[3]}}</li>
+    <li><img src="{{book_details[4]}}" alt="book_image"></li>
+  </ul>
 
   <p>Result1:</p> {{result1["books"]}}
-  <div class="container" id="result_display">
 
+  <div class="text-center">
+    {{result2["reviews_widget"]|safe}}
   </div>
 
-<script type="text/javascript">
-  displaying = JSON.stringify({{result2}})
-  document.getElementById("result_display").innerHTML = displaying;
-</script>
 {% endblock %}
