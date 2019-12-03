@@ -43,31 +43,51 @@ def index():
 @app.route("/book", methods=["GET", "POST"])
 @login_required
 def book():
-    isbn = request.args.get("isbn")
-    res1 = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "hYq7LZ3pS3xoQTShFaX9A", "isbns": isbn})
-    if res1.status_code != 200:
-      raise Exception("ERROR: API request unsuccessful.")
-    result1 = res1.json()
+    # handling GET request:
+    if request.method == "GET":
+        isbn = request.args.get("isbn")
+        # Query user's review if available
+        cursor = db.execute("SELECT * FROM reviews WHERE user_id = :user_id AND isbn = :isbn",{"user_id": session["user_id"], "isbn": isbn})
+        user_review = cursor.fetchone() # varible indicating whether user has reviewed the book or not
 
-    res2 = requests.get("https://www.goodreads.com/book/show.json", params={"key": "hYq7LZ3pS3xoQTShFaX9A", "id": result1["books"][0]["id"]})
-    if res2.status_code != 200:
-      raise Exception("ERROR: API request unsuccessful.")
-    result2 = res2.json()
+        # Accessing API to get book details:
+        res1 = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "hYq7LZ3pS3xoQTShFaX9A", "isbns": isbn})
+        if res1.status_code != 200:
+          raise Exception("ERROR: API request unsuccessful.")
+        result1 = res1.json()
 
-    res3 = requests.get("https://www.goodreads.com/book/show.xml", params={"key": "hYq7LZ3pS3xoQTShFaX9A", "id": result1["books"][0]["id"]})
-    if res3.status_code != 200:
-      raise Exception("ERROR: API request unsuccessful.")
-    root = ET.fromstring(res3.content)
-    book_details = []
-    for book in root.findall('book'):
-        book_details.append(book.find('title').text)
-        book_details.append(book.find('publication_year').text)
-        book_details.append(book.find('publisher').text)
-        book_details.append(book.find('description').text)
-        book_details.append(BeautifulSoup(book.find('small_image_url').text))
+        res2 = requests.get("https://www.goodreads.com/book/show.json", params={"key": "hYq7LZ3pS3xoQTShFaX9A", "id": result1["books"][0]["id"]})
+        if res2.status_code != 200:
+          raise Exception("ERROR: API request unsuccessful.")
+        result2 = res2.json()
 
-    print(book_details)
-    return render_template("book.html", isbn=isbn, result1=result1, result2=result2, book_details=book_details)
+        res3 = requests.get("https://www.goodreads.com/book/show.xml", params={"key": "hYq7LZ3pS3xoQTShFaX9A", "id": result1["books"][0]["id"]})
+        if res3.status_code != 200:
+          raise Exception("ERROR: API request unsuccessful.")
+        root = ET.fromstring(res3.content)
+        book_details = []
+        for book in root.findall('book'):
+            book_details.append(book.find('title').text)
+            book_details.append(book.find('publication_year').text)
+            book_details.append(book.find('publisher').text)
+            book_details.append(book.find('description').text)
+            book_details.append(book.find('small_image_url').text)
+            book_details.append(book.find('authors/author/name').text)
+
+
+        return render_template("book.html",user_review=user_review, result1=result1, result2=result2, book_details=book_details)
+
+    # handling POST request
+    if request.method == "POST":
+        #Insert to the DATABASE
+        db.execute("INSERT INTO reviews (user_id, review, rating, isbn) VALUES (:user_id, :review_text, :rating, :isbn)",
+                    {"user_id": session["user_id"],
+                    "isbn": request.form.get("isbn_topass"),
+                    "review_text":request.form.get("review_area"),
+                    "rating": float(request.form['rating'])
+                    })
+        db.commit()
+        return render_template("index.html")
 
 
 @app.route("/search", methods=["GET", "POST"])

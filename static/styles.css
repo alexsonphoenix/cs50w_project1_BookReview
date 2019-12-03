@@ -1,8 +1,44 @@
-
+@charset "UTF-8";
 #myPopup {
-   visibility:hidden;
+  visibility: hidden;
 }
 
-main{
+main {
   max-inline-size: min-content;
 }
+
+.rating {
+  width: 133px;
+  height: 25px;
+  margin: 0 auto;
+  border: 1px solid #CCCCCC;
+  background: #F9F9F9;
+}
+.rating label {
+  float: right;
+  position: relative;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+}
+.rating label:not(:first-of-type) {
+  padding-right: 2px;
+}
+.rating label:before {
+  content: "★";
+  font-size: 27px;
+  color: #CCCCCC;
+  line-height: 1;
+}
+.rating input {
+  display: none;
+}
+.rating input:checked ~ label:before, .rating:not(:checked) > label:hover:before, .rating:not(:checked) > label:hover ~ label:before {
+  color: #F9DF4A;
+}
+
+#goodreads-widget {
+  width: 100% !important;
+}
+
+/*# sourceMappingURL=styles.css.map */

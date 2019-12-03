@@ -5,19 +5,77 @@
 {% endblock %}
 
 {% block main %}
-  <h1>Book Details:</h1>
+  <h1 class="text-center">{{ book_details[0] }} - ISBN:<span id="isbn_topass"><small>{{result1["books"][0]["isbn"]}}</small></span></h1>
+  <img src="{{book_details[4]}}" alt="book_image" class="rounded mx-auto d-block" style="width:150px; height:auto;">
   <ul>
-    <li>Book Title: {{book_details[0]}}</li>
-    <li>publication year: {{book_details[1]}}</li>
-    <li>Publisher: {{book_details[2]}}</li>
-    <li>description: {{book_details[3]}}</li>
-    <li><img src="{{book_details[4]}}" alt="book_image"></li>
+    <li>Author: {{book_details[5]}}</li>
+    <li>Published by {{book_details[2]}} in {{book_details[1]}}</li>
+    <li>Description: {{book_details[3]}}</li>
   </ul>
 
-  <p>Result1:</p> {{result1["books"]}}
+  <div class="review_statistics text-center">
+    <p>Average rating: {{ result1["books"][0]["average_rating"] }}</p>
+    <p>{{ result1["books"][0]["work_ratings_count"] }} ratings & {{ result1["books"][0]["work_text_reviews_count"] }} reviews</p>
+    <p></p>
+  </div>
 
-  <div class="text-center">
+
+
+  {% if user_review %}  <!-- If user_review exists => display their review, rating-->
+    <h2>Your Review:</h2>
+    <div class="user_review text-center">
+      <p id="user_review">{{user_review.review}}</p>
+      <span class="user_rating">
+        <div class="row" style="text-align: center; display: inline-block;">
+          <span>Your rating: </span>
+          {% for i in range(user_review.rating | int) %}
+            <span  class="text-warning">★ </span>
+          {% endfor %}
+        </div>
+      </span>
+    </div>
+  {% else %}  <!-- If user_review does not exist => show FORM to fill -->
+    <div class="local_review">
+      <form class="" action="{{url_for('book')}}" method="post">
+        <!-- REVIEW:  -->
+        <div class="form-group">
+          <input type="text" name="isbn_topass" hidden value='{{result1["books"][0]["isbn"]}}'/>
+        </div>
+
+        <div class="form-group">
+          <textarea class="form-control" id="review_area" name="review_area" maxlength="800" rows='3' placeholder="Write a review..."></textarea>
+        </div>
+
+        <!--Rating system-->
+        <div class="rating">
+          <input type="radio" id="star5" name="rating" value="5" /><label for="star5"></label>
+          <input type="radio" id="star4" name="rating" value="4" /><label for="star4"></label>
+          <input type="radio" id="star3" name="rating" value="3" /><label for="star3"></label>
+          <input type="radio" id="star2" name="rating" value="2" /><label for="star2"></label>
+          <input type="radio" id="star1" name="rating" value="1" /><label for="star1"></label>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" name="submit_review" class="btn btn-info">Submit Review</button>
+      </div>
+    </form>
+  </div>
+  {% endif %}
+
+  <br>
+  <hr>
+  <h2>Goodreads Reviews:</h2>
+  <div id="goodreads_reviews_display" class="text-center">
     {{result2["reviews_widget"]|safe}}
   </div>
 
+<script type="text/javascript">
+
+window.setTimeout(function(){
+  console.log("Working nowwwww")
+  document.getElementById("goodreads-widget").style.width="100%";
+  document.getElementById("the_iframe").style.width="90%";
+}, 1200);
+
+</script>
 {% endblock %}

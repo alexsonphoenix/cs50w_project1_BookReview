@@ -23,6 +23,10 @@
         <input type="text" class="form-control" id="searchInput" name="searchInput" placeholder="ISBN, Title, Year or Author" required autocomplete="off">
       </div>
 
+      <div class="form-group">
+        <button type="button" name="search" id="search_button" class="btn btn-info"> Search </button>
+      </div>
+
       <div class="spinner-border text-info" role="status" id="searching" style="display:none;">
         <span class="sr-only">Loading...</span>
       </div>
@@ -50,7 +54,7 @@ function loadSearchType(stype){
 $(document).ready(function(){
   //var t;
   var user_input;
-  $('input[name="searchInput"]').keyup(function(){
+  $("#search_button").click(function(){
       //Indicators of search status
       var searching = document.getElementById("searching");
       var searched = document.getElementById("searched");
