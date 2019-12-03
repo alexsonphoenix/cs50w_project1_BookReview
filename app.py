@@ -89,6 +89,45 @@ def book():
         db.commit()
         return render_template("index.html")
 
+@app.route("/api/<int:isbn>")
+def api(isbn):
+    #API Access: If users make a GET request to your website’s /api/<isbn> route, where <isbn> is an ISBN number, your website should return a JSON response containing the book’s title, author, publication date, ISBN number, review count, and average score. The resulting JSON should follow the format:
+
+    # Make sure book exists
+    qry_book = db.execute("SELECT * FROM books WHERE isbn = :isbn",{"isbn": str(isbn)}).fetchone()
+    if qry_book is None:
+        return jsonify({"error": "Invalid isbn"}),404
+
+    # Get the useful data from goodreads:
+    res1 = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "hYq7LZ3pS3xoQTShFaX9A", "isbns": isbn})
+    if res1.status_code != 200:
+      raise Exception("ERROR: API request unsuccessful.")
+    result1 = res1.json()
+
+    res3 = requests.get("https://www.goodreads.com/book/show.xml", params={"key": "hYq7LZ3pS3xoQTShFaX9A", "id": result1["books"][0]["id"]})
+    if res3.status_code != 200:
+      raise Exception("ERROR: API request unsuccessful.")
+    root = ET.fromstring(res3.content)
+
+    #store necessary data into a python list
+    book_details = []
+    for book in root.findall('book'):
+        book_details.append(book.find('title').text)
+        book_details.append(book.find('authors/author/name').text)
+        book_details.append(book.find('publication_year').text)
+    book_details.append(isbn)
+    book_details.append(result1["books"][0]["work_text_reviews_count"])
+    book_details.append(result1["books"][0]["average_rating"])
+
+    return jsonify({
+                    "title": book_details[0],
+                    "author": book_details[1],
+                    "year": int(book_details[2]),
+                    "isbn": book_details[3],
+                    "review_count": book_details[4],
+                    "average_score": book_details[5]
+                })
+
 
 @app.route("/search", methods=["GET", "POST"])
 def search():
@@ -115,6 +154,7 @@ def search():
 
     res = [(result.isbn, result.title, result.author, result.year) for result in results]
     return jsonify(res)
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
