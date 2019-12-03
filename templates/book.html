@@ -36,7 +36,7 @@
     </div>
   {% else %}  <!-- If user_review does not exist => show FORM to fill -->
     <div class="local_review">
-      <form class="" action="{{url_for('book')}}" method="post">
+      <form action="{{url_for('book')}}" method="post">
         <!-- REVIEW:  -->
         <div class="form-group">
           <input type="text" name="isbn_topass" hidden value='{{result1["books"][0]["isbn"]}}'/>

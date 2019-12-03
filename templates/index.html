@@ -6,7 +6,7 @@
 
 {% block main %}
 <div class="text-center">
-  <form>
+  <form action="{{url_for('search')}}" method="post">
     <div class="form-inline">
       <div class="form-group">
         <select class="form-control" id="input_type" name="input_type" onchange="loadSearchType(this.value)" required>
@@ -43,7 +43,11 @@
 
 <!-- Display results -->
 <h2>Results:</h2>
-<ul id="display_results"></ul>
+<ul id="display_results">
+  {% for book in res %}
+    <li><a href='/book?isbn={{ book[0] }}'>{{book[1]}} by {{book[2]}} in {{book[3]}}</a> </li>
+  {% endfor %}
+</ul>
 
 <script type="text/javascript">
 var search_type;

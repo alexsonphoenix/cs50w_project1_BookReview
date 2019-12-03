@@ -131,29 +131,54 @@ def api(isbn):
 
 @app.route("/search", methods=["GET", "POST"])
 def search():
-    user_input=request.args.get("q")
-    input_type=str(request.args.get("t"))  # javascript returns search type(isbn, title,author,or year)
+    if request.method == "GET":
+        user_input=request.args.get("q")
+        input_type=str(request.args.get("t"))  # javascript returns search type(isbn, title,author,or year)
 
-    if(user_input is None or input_type is None):
-        return apology("Must specify search type and search string", 500)
+        if(user_input is None or input_type is None):
+            return apology("Must specify search type and search string", 500)
 
-    results=[];
-    # Query differently based on the search type: isbn/title/author/year.
-    if(input_type=="byIsbn"):
-        print("query by isbn")
-        results = db.execute("SELECT * FROM books WHERE isbn LIKE '%'||:user_input||'%'",{"user_input":str(user_input)}).fetchall()
-    elif(input_type=="byTitle"):
-        print("query by title")
-        results = db.execute("SELECT * FROM books WHERE title LIKE '%'||:user_input||'%'",{"user_input":str(user_input)}).fetchall()
-    elif(input_type=="byAuthor"):
-        print("query by author")
-        results = db.execute("SELECT * FROM books WHERE author LIKE '%'||:user_input||'%'",{"user_input":str(user_input)}).fetchall()
-    elif(input_type=="byYear"):
-        print("query by year")
-        results = db.execute("SELECT * FROM books WHERE year::TEXT LIKE '%'||:user_input||'%'",{"user_input":int(user_input)}).fetchall()
+        results=[];
+        # Query differently based on the search type: isbn/title/author/year.
+        if(input_type=="byIsbn"):
+            print("query by isbn")
+            results = db.execute("SELECT * FROM books WHERE isbn LIKE '%'||:user_input||'%'",{"user_input":str(user_input)}).fetchall()
+        elif(input_type=="byTitle"):
+            print("query by title")
+            results = db.execute("SELECT * FROM books WHERE title LIKE '%'||:user_input||'%'",{"user_input":str(user_input)}).fetchall()
+        elif(input_type=="byAuthor"):
+            print("query by author")
+            results = db.execute("SELECT * FROM books WHERE author LIKE '%'||:user_input||'%'",{"user_input":str(user_input)}).fetchall()
+        elif(input_type=="byYear"):
+            print("query by year")
+            results = db.execute("SELECT * FROM books WHERE year::TEXT LIKE '%'||:user_input||'%'",{"user_input":int(user_input)}).fetchall()
 
-    res = [(result.isbn, result.title, result.author, result.year) for result in results]
-    return jsonify(res)
+        res = [(result.isbn, result.title, result.author, result.year) for result in results]
+        return jsonify(res)
+    else:
+        user_input=request.form.get("searchInput")
+        input_type=str(request.form.get("input_type"))  # javascript returns search type(isbn, title,author,or year)
+
+        if(user_input is None or input_type is None):
+            return apology("Must specify search type and search string", 500)
+
+        results=[];
+        # Query differently based on the search type: isbn/title/author/year.
+        if(input_type=="byIsbn"):
+            print("query by isbn")
+            results = db.execute("SELECT * FROM books WHERE isbn LIKE '%'||:user_input||'%'",{"user_input":str(user_input)}).fetchall()
+        elif(input_type=="byTitle"):
+            print("query by title")
+            results = db.execute("SELECT * FROM books WHERE title LIKE '%'||:user_input||'%'",{"user_input":str(user_input)}).fetchall()
+        elif(input_type=="byAuthor"):
+            print("query by author")
+            results = db.execute("SELECT * FROM books WHERE author LIKE '%'||:user_input||'%'",{"user_input":str(user_input)}).fetchall()
+        elif(input_type=="byYear"):
+            print("query by year")
+            results = db.execute("SELECT * FROM books WHERE year::TEXT LIKE '%'||:user_input||'%'",{"user_input":int(user_input)}).fetchall()
+
+        res = [(result.isbn, result.title, result.author, result.year) for result in results]
+        return render_template("index.html",res = res)
 
 
 @app.route("/login", methods=["GET", "POST"])
